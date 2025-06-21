@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mysql:8.0 # Specifies the MySQL image and version to use
+    container_name: mysql_db_container # Optional: Assigns a custom name to the container
+    environment:
+      MYSQL_ROOT_PASSWORD: root # Sets the root password for MySQL
+      MYSQL_DATABASE: chainlit # Creates a default database upon startup
+      MYSQL_USER: chainlit # Creates a user with specified username
+      MYSQL_PASSWORD: chainlit # Sets the password for the created user
+    ports:
+      - "3306:3306" # Maps port 3306 on the host to port 3306 in the container
+    volumes:
+      - ./mysql_data:/var/lib/mysql # Persists data in a named volume
+    restart: always # Ensures the container restarts automatically if it stops
+
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      SERVICES: s3
+    ports:
+      - 4566:4566
+    volumes:
+      - ./localstack-script.sh:/etc/localstack/init/ready.d/script.sh
+      - "/var/run/docker.sock:/var/run/docker.sock"
