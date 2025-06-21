@@ -3,3 +3,5 @@ __pycache__
 .venv
 mysql_data
 .env
+.files
+my-localstack-data
