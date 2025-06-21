@@ -1,7 +1,7 @@
 import chainlit as cl
 from local_s3 import S3StorageClient
 from chainlit.data import get_data_layer
-
+from chainlit.input_widget import TextInput
 from mysql_sqlalchemy_data_layer import MysqlSQLAlchemyDataLayer
 
 storage_client = S3StorageClient(
@@ -74,3 +74,26 @@ async def main(message: cl.Message):
     tool_res = await tool()
 
     await cl.Message(content=tool_res).send()
+
+
+@cl.on_chat_start
+async def start():
+    user: cl.User = cl.user_session.get("user")
+    settings: dict = user.metadata.get("settings", {})
+    settings = await cl.ChatSettings(
+        [
+            TextInput(
+                id="username", label="username", initial=settings.get("username", "")
+            )
+        ]
+    ).send()
+
+
+@cl.on_settings_update
+async def setup_agent(settings):
+    print("on_settings_update", settings)
+    data_layer = get_data_layer()
+    user: cl.User = cl.user_session.get("user")
+    user.metadata["settings"] = settings
+    # update user metadata
+    await data_layer.create_user(user)
