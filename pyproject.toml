@@ -9,5 +9,6 @@ dependencies = [
     "boto3>=1.38.41",
     "chainlit>=2.5.5",
     "cryptography>=45.0.4",
+    "playwright>=1.52.0",
     "sqlalchemy>=2.0.41",
 ]

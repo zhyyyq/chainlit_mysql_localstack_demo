@@ -3,6 +3,7 @@ from local_s3 import S3StorageClient
 from chainlit.data import get_data_layer
 from chainlit.input_widget import TextInput
 from mysql_sqlalchemy_data_layer import MysqlSQLAlchemyDataLayer
+from playwright.async_api import async_playwright
 
 storage_client = S3StorageClient(
     bucket="my-bucket",
@@ -69,11 +70,13 @@ async def main(message: cl.Message):
     Returns:
         None.
     """
-
-    # Call the tool
-    tool_res = await tool()
-
-    await cl.Message(content=tool_res).send()
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(channel="chrome")
+        page = await browser.new_page()
+        await page.goto("https://www.baidu.com")
+        foto = await page.screenshot()
+        image = cl.Image(name="image1", display="inline", content=foto)
+        await cl.Message(content="snapshot from baidu", elements=[image]).send()
 
 
 @cl.on_chat_start
